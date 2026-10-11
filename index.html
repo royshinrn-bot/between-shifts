@@ -120,7 +120,7 @@ a.card:focus-visible{outline:3px solid var(--c);outline-offset:3px}
 .status{font-weight:700;font-size:12px;line-height:1;padding:6px 10px;border-radius:999px;white-space:nowrap;display:inline-flex;align-items:center;gap:6px}
 .status::before{content:"";width:6px;height:6px;border-radius:50%;background:currentColor}
 .status.live{color:var(--live);background:var(--live-bg)}
-.status.wip{color:var(--wip);background:var(--wip-bg)}
+.status.wip,.status.web{color:var(--wip);background:var(--wip-bg)}
 .card h2{font-family:var(--display);font-weight:700;font-size:19px;line-height:1.2;letter-spacing:-.01em;margin:0;text-wrap:balance}
 .card p{margin:0;color:var(--muted);font-size:15px;display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden}
 .foot{margin-top:auto;padding-top:12px;display:flex;justify-content:space-between;align-items:center;gap:8px;font-size:13px;color:var(--muted)}
@@ -185,7 +185,7 @@ const PROFILE_PHOTO = "images/roy.jpg";
    아래 ITEMS 목록에 { ... } 하나를 복사해서 붙이고 내용을 바꾸세요.
    - title  : 제목
    - type   : "app" | "book" | "art" | "design"  (카드 색과 필터 버튼이 정해짐)
-   - status : "live" (출시됨) | "wip" (진행 중) | ""  (표시 안 함)
+   - status : "live" (출시됨) | "web" (웹 베타) | "wip" (진행 중) | ""  (표시 안 함)
    - desc   : 설명 (카드에는 3줄까지 보임)
    - image  : 썸네일 파일 경로 (예: "images/life-by-shift.jpg"). 비우면 자동 그림
    - link   : 누르면 갈 주소. 비우면 카드가 눌리지 않음
@@ -197,9 +197,9 @@ const ITEMS = [
   { title:"Life by Shift", type:"app", status:"live",
     desc:"Know your paycheque before payday. Tracks shifts, nights and OT across your 2-week pay period. No sign-up; your data stays on your phone.",
     image:"images/life-by-shift.jpg", link:"https://apps.apple.com/app/life-by-shift-shift-tracker/id6763772593", made:"iPhone · US$1.99" },
-  { title:"Moa Blocks", type:"app", status:"wip",
-    desc:"A falling-block puzzle where you build Hangul syllables as the pieces land.",
-    image:"", link:"", made:"In progress" },
+  { title:"Korean Fidget", type:"app", status:"web",
+    desc:"Build Korean syllables by tapping consonant, vowel and batchim buttons, then hear them read aloud. No Korean keyboard needed.",
+    image:"images/korean-fidget.jpg", link:"https://korean-fidget.vercel.app", made:"Web app" },
   { title:"Ballworks", type:"app", status:"wip",
     desc:"Steel balls, rails and gears. A fidget puzzle you solve by building the track.",
     image:"", link:"", made:"In progress" },
@@ -215,7 +215,7 @@ const ITEMS = [
 ];
 
 const TYPES = { app:"Apps", book:"Books", art:"Illustration", design:"Design" };
-const STATUS = { live:"Live", wip:"In progress" };
+const STATUS = { live:"Live", wip:"In progress", web:"Web beta" };
 const board = document.getElementById('board');
 const filters = document.getElementById('filters');
 let current = 'all';
