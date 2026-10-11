@@ -106,7 +106,7 @@ h1 .mark svg{position:absolute;left:0;right:0;bottom:-.04em;width:100%;height:.2
 .card:nth-child(even):hover{transform:rotate(1.2deg) translateY(-4px)}
 a.card:focus-visible{outline:3px solid var(--c);outline-offset:3px}
 .thumb{margin:10px 10px 0;border-radius:16px;aspect-ratio:4/3;max-width:100%;background:var(--soft);position:relative;overflow:hidden}
-.thumb img{width:100%;height:100%;object-fit:cover;display:block}
+.thumb img,.thumb video{width:100%;height:100%;object-fit:cover;display:block}
 .ph{position:absolute;inset:0;display:grid;place-items:center}
 .ph .b1,.ph .b2{position:absolute;border-radius:50%;background:var(--c)}
 .ph .b1{width:62%;aspect-ratio:1;right:-14%;top:-22%;opacity:.9}
@@ -188,6 +188,7 @@ const PROFILE_PHOTO = "images/roy.jpg";
    - status : "live" (출시됨) | "web" (웹 베타) | "wip" (진행 중) | ""  (표시 안 함)
    - desc   : 설명 (카드에는 3줄까지 보임)
    - image  : 썸네일 파일 경로 (예: "images/life-by-shift.jpg"). 비우면 자동 그림
+   - video  : (선택) 짧은 mp4 영상 경로. 있으면 소리 없이 반복 재생되고, image는 로딩 전 대표 사진이 됨
    - link   : 누르면 갈 주소. 비우면 카드가 눌리지 않음
    - made   : 카드 아래 작은 글씨 (예: "Oct 2026", "After 3 nights")
    맨 위에 있는 카드가 먼저 보여요.
@@ -199,7 +200,7 @@ const ITEMS = [
     image:"images/life-by-shift.jpg", link:"https://apps.apple.com/app/life-by-shift-shift-tracker/id6763772593", made:"iPhone · US$1.99" },
   { title:"Korean Fidget", type:"app", status:"web",
     desc:"Build Korean syllables by tapping consonant, vowel and batchim buttons, then hear them read aloud. No Korean keyboard needed.",
-    image:"images/korean-fidget.jpg", link:"https://korean-fidget.vercel.app", made:"Web app" },
+    image:"images/korean-fidget-poster.jpg", video:"images/korean-fidget.mp4", link:"https://korean-fidget.vercel.app", made:"Web app" },
   { title:"Ballworks", type:"app", status:"wip",
     desc:"Steel balls, rails and gears. A fidget puzzle you solve by building the track.",
     image:"", link:"", made:"In progress" },
@@ -227,7 +228,9 @@ const spark = `<svg class="spark" viewBox="0 0 58 20" aria-hidden="true"><polyli
 
 function card(it){
   const type = TYPES[it.type] ? it.type : 'app';
-  const thumb = it.image
+  const thumb = it.video
+    ? `<video src="${esc(it.video)}" ${it.image ? `poster="${esc(it.image)}"` : ''} muted loop playsinline preload="metadata" aria-label="${esc(it.title)} demo"></video>`
+    : it.image
     ? `<img src="${esc(it.image)}" alt="${esc(it.title)}" loading="lazy">`
     : `<div class="ph"><span class="b1"></span><span class="b2"></span><span class="ini">${esc(initials(it.title))}</span>${spark}</div>`;
   const status = STATUS[it.status] ? `<span class="status ${it.status}">${STATUS[it.status]}</span>` : '';
@@ -259,6 +262,19 @@ function render(){
   const list = current === 'all' ? ITEMS : ITEMS.filter(it => it.type === current);
   board.innerHTML = list.length ? list.map(card).join('') : '<div class="empty">Nothing here yet. New things are on the way.</div>';
   document.getElementById('count').textContent = `${list.length} of ${ITEMS.length} projects`;
+  watchVideos();
+}
+
+/* 영상은 화면에 보일 때만 재생 (움직임 줄이기 설정이면 재생 안 함) */
+const calm = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+const vidObs = 'IntersectionObserver' in window ? new IntersectionObserver(es => es.forEach(e => {
+  const v = e.target;
+  if (e.isIntersecting && !calm) { v.play().catch(() => {}); } else { v.pause(); }
+}), { threshold: 0.35 }) : null;
+function watchVideos(){
+  board.querySelectorAll('video').forEach(v => {
+    if (vidObs) vidObs.observe(v); else if (!calm) v.play().catch(() => {});
+  });
 }
 
 filters.addEventListener('click', e => {
