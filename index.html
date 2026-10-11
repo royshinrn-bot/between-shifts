@@ -188,7 +188,7 @@ const PROFILE_PHOTO = "images/roy.jpg";
    - status : "live" (출시됨) | "web" (웹 베타) | "wip" (진행 중) | ""  (표시 안 함)
    - desc   : 설명 (카드에는 3줄까지 보임)
    - image  : 썸네일 파일 경로 (예: "images/life-by-shift.jpg"). 비우면 자동 그림
-   - video  : (선택) 짧은 mp4 영상 경로. 있으면 소리 없이 반복 재생되고, image는 로딩 전 대표 사진이 됨
+   - video  : (선택) 짧은 mp4 영상 경로. 같은 이름의 .webm도 있으면 함께 씀. 소리 없이 반복 재생되고, image는 로딩 전 대표 사진이 됨
    - link   : 누르면 갈 주소. 비우면 카드가 눌리지 않음
    - made   : 카드 아래 작은 글씨 (예: "Oct 2026", "After 3 nights")
    맨 위에 있는 카드가 먼저 보여요.
@@ -229,7 +229,9 @@ const spark = `<svg class="spark" viewBox="0 0 58 20" aria-hidden="true"><polyli
 function card(it){
   const type = TYPES[it.type] ? it.type : 'app';
   const thumb = it.video
-    ? `<video src="${esc(it.video)}" ${it.image ? `poster="${esc(it.image)}"` : ''} muted loop playsinline preload="metadata" aria-label="${esc(it.title)} demo"></video>`
+    ? `<video ${it.image ? `poster="${esc(it.image)}"` : ''} muted autoplay loop playsinline webkit-playsinline preload="auto" aria-label="${esc(it.title)} demo">`
+      + `<source src="${esc(it.video.replace(/\.mp4$/i, '.webm'))}" type="video/webm">`
+      + `<source src="${esc(it.video)}" type="video/mp4"></video>`
     : it.image
     ? `<img src="${esc(it.image)}" alt="${esc(it.title)}" loading="lazy">`
     : `<div class="ph"><span class="b1"></span><span class="b2"></span><span class="ini">${esc(initials(it.title))}</span>${spark}</div>`;
@@ -269,11 +271,22 @@ function render(){
 const calm = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 const vidObs = 'IntersectionObserver' in window ? new IntersectionObserver(es => es.forEach(e => {
   const v = e.target;
-  if (e.isIntersecting && !calm) { v.play().catch(() => {}); } else { v.pause(); }
+  if (e.isIntersecting && !calm) { tryPlay(v); } else { v.pause(); }
 }), { threshold: 0.35 }) : null;
+function tryPlay(v){
+  v.muted = true; v.defaultMuted = true;
+  const p = v.play();
+  if (p && p.catch) p.catch(() => {
+    /* 자동재생이 막힌 경우(예: 아이폰 저전력 모드) 첫 터치 때 재생 */
+    const go = () => { v.play().catch(() => {}); };
+    document.addEventListener('pointerdown', go, { once: true });
+    document.addEventListener('touchstart', go, { once: true, passive: true });
+  });
+}
 function watchVideos(){
   board.querySelectorAll('video').forEach(v => {
-    if (vidObs) vidObs.observe(v); else if (!calm) v.play().catch(() => {});
+    if (calm) { v.removeAttribute('autoplay'); v.pause(); return; }
+    if (vidObs) vidObs.observe(v); else tryPlay(v);
   });
 }
 
