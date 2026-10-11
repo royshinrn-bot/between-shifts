@@ -98,12 +98,11 @@ h1 .mark svg{position:absolute;left:0;right:0;bottom:-.04em;width:100%;height:.2
 .board{display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:22px}
 .card{--c:var(--app);--soft:var(--app-soft);
   display:flex;flex-direction:column;background:var(--surface);border-radius:22px;overflow:hidden;color:inherit;text-decoration:none;
-  box-shadow:var(--shadow);border:1px solid var(--line);transition:transform .25s cubic-bezier(.2,.8,.3,1.4)}
+  box-shadow:var(--shadow);border:1px solid var(--line);transition:border-color .2s ease,box-shadow .2s ease}
 .card.book{--c:var(--book);--soft:var(--book-soft)}
 .card.art{--c:var(--art);--soft:var(--art-soft)}
 .card.design{--c:var(--design);--soft:var(--design-soft)}
-.card:nth-child(odd):hover{transform:rotate(-1.2deg) translateY(-4px)}
-.card:nth-child(even):hover{transform:rotate(1.2deg) translateY(-4px)}
+a.card:hover{border-color:var(--c);box-shadow:0 0 0 2px var(--c),var(--shadow)}
 a.card:focus-visible{outline:3px solid var(--c);outline-offset:3px}
 .thumb{margin:10px 10px 0;border-radius:16px;aspect-ratio:4/3;max-width:100%;background:var(--soft);position:relative;overflow:hidden}
 .thumb img,.thumb video{width:100%;height:100%;object-fit:cover;display:block}
@@ -136,7 +135,7 @@ footer{display:flex;flex-wrap:wrap;justify-content:space-between;gap:8px;font-si
   .avatar{width:104px;height:104px}
   .lede{font-size:16px}
 }
-@media (prefers-reduced-motion:reduce){ .card,.go{transition:none} .card:hover{transform:none!important} }
+@media (prefers-reduced-motion:reduce){ .card,.go{transition:none} }
 </style>
 </head>
 <body>
@@ -285,7 +284,13 @@ function tryPlay(v){
 }
 function watchVideos(){
   board.querySelectorAll('video').forEach(v => {
-    if (calm) { v.removeAttribute('autoplay'); v.pause(); return; }
+    if (calm) {
+      v.removeAttribute('autoplay'); v.pause();
+      const card = v.closest('.card');
+      card.addEventListener('mouseenter', () => tryPlay(v));
+      card.addEventListener('mouseleave', () => v.pause());
+      return;
+    }
     if (vidObs) vidObs.observe(v); else tryPlay(v);
   });
 }
