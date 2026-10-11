@@ -1,0 +1,284 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="description" content="Roy, ER nurse and maker. Apps, KDP books, illustration and design made between shifts.">
+<title>Between Shifts</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Unbounded:wght@500;700;800&family=Figtree:wght@400;500;600;700&display=swap">
+<style>
+/* Layout: a dotted pinboard. Each category owns one bright color; cards sit like stickers that tilt when touched. */
+:root{
+  --bg:#F4F6FF;
+  --dot:#DCE1F7;
+  --surface:#FFFFFF;
+  --ink:#1D1A3B;
+  --muted:#6A6890;
+  --line:#E6E8F6;
+  --app:#5B6CFF;   --app-soft:#E4E7FF;
+  --book:#FF5E87;  --book-soft:#FFE3EA;
+  --art:#FFB21E;   --art-soft:#FFF1D2;
+  --design:#18C79A;--design-soft:#D6F6EC;
+  --live:#0E9F6E;  --live-bg:#DDF7EC;
+  --wip:#7A5AF8;   --wip-bg:#ECE6FF;
+  --shadow:0 1px 0 rgba(29,26,59,.04), 0 10px 30px -12px rgba(61,56,140,.22);
+  --display:"Unbounded", "Avenir Next", "Segoe UI", system-ui, sans-serif;
+  --body:"Figtree", "Avenir Next", "Segoe UI", system-ui, sans-serif;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --bg:#13112A; --dot:#24214A; --surface:#1D1A3B; --ink:#F2F1FF; --muted:#A9A6D0; --line:#2C2958;
+    --app:#8592FF; --app-soft:#2A2D66; --book:#FF7FA0; --book-soft:#4A2440;
+    --art:#FFC651; --art-soft:#46371C; --design:#3EDBB0; --design-soft:#173F3A;
+    --live:#4FD8A4; --live-bg:#163D33; --wip:#A993FF; --wip-bg:#2E2766;
+    --shadow:0 1px 0 rgba(0,0,0,.2), 0 12px 32px -14px rgba(0,0,0,.6);
+    color-scheme:dark;
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#13112A; --dot:#24214A; --surface:#1D1A3B; --ink:#F2F1FF; --muted:#A9A6D0; --line:#2C2958;
+  --app:#8592FF; --app-soft:#2A2D66; --book:#FF7FA0; --book-soft:#4A2440;
+  --art:#FFC651; --art-soft:#46371C; --design:#3EDBB0; --design-soft:#173F3A;
+  --live:#4FD8A4; --live-bg:#163D33; --wip:#A993FF; --wip-bg:#2E2766;
+  --shadow:0 1px 0 rgba(0,0,0,.2), 0 12px 32px -14px rgba(0,0,0,.6);
+  color-scheme:dark;
+}
+*{box-sizing:border-box}
+body{margin:0}
+img{max-width:100%}
+body{
+  background-color:var(--bg);
+  background-image:radial-gradient(var(--dot) 1.4px, transparent 1.4px);
+  background-size:22px 22px;
+  color:var(--ink);font-family:var(--body);font-size:16px;line-height:1.55;
+}
+.wrap{max-width:1140px;margin:0 auto;padding-inline:20px;padding-block:56px 72px;display:flex;flex-direction:column;gap:40px}
+
+/* Header */
+header{display:flex;flex-direction:column;align-items:flex-start;gap:18px}
+.avatar{
+  width:96px;height:96px;border-radius:50%;padding:4px;
+  background:conic-gradient(var(--app),var(--book),var(--art),var(--design),var(--app));
+}
+.avatar span,.avatar img{width:100%;height:100%;border-radius:50%;display:grid;place-items:center;background:var(--surface);object-fit:cover;
+  font-family:var(--display);font-weight:800;font-size:34px;color:var(--ink);border:3px solid var(--bg)}
+.hello{display:flex;flex-direction:column;gap:10px;max-width:720px}
+h1{font-family:var(--display);font-weight:800;font-size:clamp(32px,6vw,58px);line-height:1.16;letter-spacing:-.02em;margin:0;text-wrap:balance}
+h1 .mark{position:relative;white-space:nowrap;z-index:0}
+h1 .mark svg{position:absolute;left:0;right:0;bottom:-.04em;width:100%;height:.24em;overflow:visible;z-index:-1}
+.lede{margin:0;font-size:18px;color:var(--muted);max-width:56ch}
+.tags{display:flex;flex-wrap:wrap;gap:8px}
+.tag{font-weight:600;font-size:13px;padding:6px 12px;border-radius:999px}
+.tag.app{background:var(--app-soft);color:var(--app)}
+.tag.book{background:var(--book-soft);color:var(--book)}
+.tag.art{background:var(--art-soft);color:var(--ink)}
+.tag.design{background:var(--design-soft);color:var(--design)}
+.handles{display:flex;flex-wrap:wrap;gap:10px}
+.handle{display:inline-flex;align-items:center;gap:8px;font-weight:600;font-size:14px;color:var(--ink);text-decoration:none;
+  background:var(--surface);border:1px solid var(--line);padding:9px 14px;border-radius:999px;box-shadow:var(--shadow)}
+.handle:hover,.handle:focus-visible{border-color:var(--app);color:var(--app);outline:none}
+.handle svg{width:16px;height:16px}
+
+/* Filters */
+.filters{display:flex;flex-wrap:wrap;gap:8px;position:sticky;top:env(safe-area-inset-top,0px);z-index:2;padding-block:10px;
+  background:linear-gradient(var(--bg) 70%, transparent)}
+.chip{font:600 14px/1 var(--body);padding:11px 16px;border-radius:999px;border:1.5px solid var(--line);background:var(--surface);color:var(--ink);cursor:pointer;display:inline-flex;align-items:center;gap:8px}
+.chip .dot{width:9px;height:9px;border-radius:50%;background:var(--ink)}
+.chip[data-k="app"] .dot{background:var(--app)} .chip[data-k="book"] .dot{background:var(--book)}
+.chip[data-k="art"] .dot{background:var(--art)} .chip[data-k="design"] .dot{background:var(--design)}
+.chip .n{font-size:12px;color:var(--muted)}
+.chip[aria-pressed="true"]{background:var(--ink);border-color:var(--ink);color:var(--bg)}
+.chip[aria-pressed="true"] .n{color:inherit;opacity:.7}
+.chip[aria-pressed="true"][data-k="all"] .dot{background:conic-gradient(var(--app),var(--book),var(--art),var(--design),var(--app))}
+.chip:focus-visible{outline:2px solid var(--app);outline-offset:2px}
+
+/* Board */
+.board{display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:22px}
+.card{--c:var(--app);--soft:var(--app-soft);
+  display:flex;flex-direction:column;background:var(--surface);border-radius:22px;overflow:hidden;color:inherit;text-decoration:none;
+  box-shadow:var(--shadow);border:1px solid var(--line);transition:transform .25s cubic-bezier(.2,.8,.3,1.4)}
+.card.book{--c:var(--book);--soft:var(--book-soft)}
+.card.art{--c:var(--art);--soft:var(--art-soft)}
+.card.design{--c:var(--design);--soft:var(--design-soft)}
+.card:nth-child(odd):hover{transform:rotate(-1.2deg) translateY(-4px)}
+.card:nth-child(even):hover{transform:rotate(1.2deg) translateY(-4px)}
+a.card:focus-visible{outline:3px solid var(--c);outline-offset:3px}
+.thumb{margin:10px 10px 0;border-radius:16px;aspect-ratio:4/3;max-width:100%;background:var(--soft);position:relative;overflow:hidden}
+.thumb img{width:100%;height:100%;object-fit:cover;display:block}
+.ph{position:absolute;inset:0;display:grid;place-items:center}
+.ph .b1,.ph .b2{position:absolute;border-radius:50%;background:var(--c)}
+.ph .b1{width:62%;aspect-ratio:1;right:-14%;top:-22%;opacity:.9}
+.ph .b2{width:34%;aspect-ratio:1;left:-8%;bottom:-12%;opacity:.35}
+.ph .ini{position:relative;font-family:var(--display);font-weight:800;font-size:46px;letter-spacing:-.03em;color:var(--ink)}
+.ph .spark{position:absolute;left:14px;bottom:12px;width:58px;height:20px;color:var(--ink);opacity:.55}
+.body{display:flex;flex-direction:column;gap:8px;padding:16px 18px 18px;flex:1}
+.meta{display:flex;justify-content:space-between;align-items:center;gap:8px}
+.cat{font-weight:700;font-size:12px;letter-spacing:.06em;text-transform:uppercase;color:var(--c)}
+.card.art .cat{color:var(--ink)}
+.status{font-weight:700;font-size:12px;line-height:1;padding:6px 10px;border-radius:999px;white-space:nowrap;display:inline-flex;align-items:center;gap:6px}
+.status::before{content:"";width:6px;height:6px;border-radius:50%;background:currentColor}
+.status.live{color:var(--live);background:var(--live-bg)}
+.status.wip{color:var(--wip);background:var(--wip-bg)}
+.card h2{font-family:var(--display);font-weight:700;font-size:19px;line-height:1.2;letter-spacing:-.01em;margin:0;text-wrap:balance}
+.card p{margin:0;color:var(--muted);font-size:15px;display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden}
+.foot{margin-top:auto;padding-top:12px;display:flex;justify-content:space-between;align-items:center;gap:8px;font-size:13px;color:var(--muted)}
+.go{display:inline-grid;place-items:center;width:34px;height:34px;border-radius:50%;background:var(--c);color:#fff;font-weight:700;transition:transform .2s}
+.card.art .go{color:var(--ink)}
+a.card:hover .go{transform:translateX(3px)}
+.empty{grid-column:1/-1;padding:44px;text-align:center;color:var(--muted);border:2px dashed var(--line);border-radius:22px;background:var(--surface)}
+
+footer{display:flex;flex-wrap:wrap;justify-content:space-between;gap:8px;font-size:13px;color:var(--muted)}
+
+@media (max-width:520px){
+  .wrap{padding-block:32px 56px;gap:30px}
+  .avatar{width:76px;height:76px}
+  .lede{font-size:16px}
+}
+@media (prefers-reduced-motion:reduce){ .card,.go{transition:none} .card:hover{transform:none!important} }
+</style>
+</head>
+<body>
+
+<div class="wrap">
+  <header>
+    <div class="avatar"><span id="avatar">R</span></div>
+    <div class="hello">
+      <h1>Hi, I'm Roy. <span class="mark">I make things<svg viewBox="0 0 200 20" preserveAspectRatio="none" aria-hidden="true"><path d="M2 12 Q 25 2 50 11 T 100 11 T 150 11 T 198 9" fill="none" stroke="var(--book)" stroke-width="5" stroke-linecap="round"/></svg></span> between shifts.</h1>
+      <p class="lede">ER nurse in Alberta, Canada. On days off and after nights I build apps, draw, and publish books. This board is everything I've made so far.</p>
+    </div>
+    <div class="tags" aria-label="What I make">
+      <span class="tag app">Apps</span><span class="tag book">KDP books</span><span class="tag art">Illustration</span><span class="tag design">Design</span>
+    </div>
+    <nav class="handles" aria-label="Social">
+      <a class="handle" href="https://www.instagram.com/medical_n_artistic/" target="_blank" rel="noopener">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.5" cy="6.5" r="1" fill="currentColor"/></svg>
+        @medical_n_artistic</a>
+      <a class="handle" href="https://www.instagram.com/lifebyshift/" target="_blank" rel="noopener">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.5" cy="6.5" r="1" fill="currentColor"/></svg>
+        @lifebyshift</a>
+    </nav>
+  </header>
+
+  <div class="filters" id="filters" role="group" aria-label="Filter by type"></div>
+
+  <main class="board" id="board" aria-live="polite"></main>
+
+  <footer>
+    <span>Made in the Alberta foothills</span>
+    <span id="count"></span>
+  </footer>
+</div>
+
+<script>
+/* =========================================================
+   프로필 사진 (Profile photo)
+   images 폴더에 사진을 올리고 파일 이름을 아래 따옴표 안에 쓰세요.
+   예: const PROFILE_PHOTO = "images/roy.jpg";
+   비워 두면 동그라미 안에 "R"이 보여요.
+   ========================================================= */
+const PROFILE_PHOTO = "";
+
+/* =========================================================
+   새 카드 추가하는 법 (How to add a card)
+   아래 ITEMS 목록에 { ... } 하나를 복사해서 붙이고 내용을 바꾸세요.
+   - title  : 제목
+   - type   : "app" | "book" | "art" | "design"  (카드 색과 필터 버튼이 정해짐)
+   - status : "live" (출시됨) | "wip" (진행 중) | ""  (표시 안 함)
+   - desc   : 설명 (카드에는 3줄까지 보임)
+   - image  : 썸네일 파일 경로 (예: "images/life-by-shift.jpg"). 비우면 자동 그림
+   - link   : 누르면 갈 주소. 비우면 카드가 눌리지 않음
+   - made   : 카드 아래 작은 글씨 (예: "Oct 2026", "After 3 nights")
+   맨 위에 있는 카드가 먼저 보여요.
+   아래 카드들은 예시예요. 실제 링크와 이미지로 바꾸거나 지우세요.
+   ========================================================= */
+const ITEMS = [
+  { title:"Life by Shift", type:"app", status:"live",
+    desc:"Shift schedule and pay tracker built around your 2-week pay period. See what this paycheque should be before payday.",
+    image:"", link:"", made:"Oct 2026" },
+  { title:"Moa Blocks", type:"app", status:"wip",
+    desc:"A falling-block puzzle where you build Hangul syllables as the pieces land.",
+    image:"", link:"", made:"In progress" },
+  { title:"Ballworks", type:"app", status:"wip",
+    desc:"Steel balls, rails and gears. A fidget puzzle you solve by building the track.",
+    image:"", link:"", made:"In progress" },
+  { title:"Planners & Calendars", type:"book", status:"live",
+    desc:"Planner and calendar books on Amazon KDP, redrawn and redesigned.",
+    image:"", link:"", made:"Amazon KDP" },
+  { title:"Halmoni's Dungeon", type:"book", status:"wip",
+    desc:"A picture book for ages 4 to 6: Grandma's everyday errands, played like an RPG quest.",
+    image:"", link:"", made:"Manuscript done" },
+  { title:"Sketchbook", type:"art", status:"",
+    desc:"Illustration studies and character sketches drawn between shifts.",
+    image:"", link:"", made:"Ongoing" }
+];
+
+const TYPES = { app:"Apps", book:"Books", art:"Illustration", design:"Design" };
+const STATUS = { live:"Live", wip:"In progress" };
+const board = document.getElementById('board');
+const filters = document.getElementById('filters');
+let current = 'all';
+try { const s = localStorage.getItem('bs-filter'); if (s) current = s; } catch(e) {}
+
+const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const initials = t => t.split(/\s+/).filter(w => /[A-Za-z0-9가-힣]/.test(w[0])).slice(0,2).map(w => w[0]).join('').toUpperCase();
+const spark = `<svg class="spark" viewBox="0 0 58 20" aria-hidden="true"><polyline fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" points="1,10 18,10 23,3 28,17 33,1 38,10 57,10"/></svg>`;
+
+function card(it){
+  const type = TYPES[it.type] ? it.type : 'app';
+  const thumb = it.image
+    ? `<img src="${esc(it.image)}" alt="${esc(it.title)}" loading="lazy">`
+    : `<div class="ph"><span class="b1"></span><span class="b2"></span><span class="ini">${esc(initials(it.title))}</span>${spark}</div>`;
+  const status = STATUS[it.status] ? `<span class="status ${it.status}">${STATUS[it.status]}</span>` : '';
+  const inner = `
+    <div class="thumb">${thumb}</div>
+    <div class="body">
+      <div class="meta"><span class="cat">${esc(TYPES[type])}</span>${status}</div>
+      <h2>${esc(it.title)}</h2>
+      <p>${esc(it.desc)}</p>
+      <div class="foot"><span>${esc(it.made)}</span>${it.link ? '<span class="go" aria-hidden="true">→</span>' : ''}</div>
+    </div>`;
+  return it.link
+    ? `<a class="card ${type}" href="${esc(it.link)}" target="_blank" rel="noopener">${inner}</a>`
+    : `<article class="card ${type}">${inner}</article>`;
+}
+
+function renderFilters(){
+  const counts = ITEMS.reduce((m, it) => (m[it.type] = (m[it.type]||0)+1, m), {});
+  const keys = ['all', ...Object.keys(TYPES).filter(k => counts[k])];
+  if (!keys.includes(current)) current = 'all';
+  filters.innerHTML = keys.map(k => {
+    const label = k === 'all' ? 'Everything' : TYPES[k];
+    const n = k === 'all' ? ITEMS.length : counts[k];
+    return `<button class="chip" id="f-${k}" data-k="${k}" aria-pressed="${k===current}"><span class="dot"></span>${label}<span class="n">${n}</span></button>`;
+  }).join('');
+}
+
+function render(){
+  const list = current === 'all' ? ITEMS : ITEMS.filter(it => it.type === current);
+  board.innerHTML = list.length ? list.map(card).join('') : '<div class="empty">Nothing here yet. New things are on the way.</div>';
+  document.getElementById('count').textContent = `${list.length} of ${ITEMS.length} projects`;
+}
+
+filters.addEventListener('click', e => {
+  const b = e.target.closest('.chip'); if (!b) return;
+  current = b.dataset.k;
+  try { localStorage.setItem('bs-filter', current); } catch(e) {}
+  filters.querySelectorAll('.chip').forEach(c => c.setAttribute('aria-pressed', c.dataset.k === current));
+  render();
+});
+
+if (PROFILE_PHOTO) {
+  const av = document.getElementById('avatar');
+  const img = document.createElement('img');
+  img.src = PROFILE_PHOTO; img.alt = "Roy";
+  img.onerror = () => img.replaceWith(av);
+  av.replaceWith(img);
+}
+
+renderFilters();
+render();
+</script>
+</body>
+</html>
