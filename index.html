@@ -81,7 +81,8 @@ h1 .mark svg{position:absolute;left:0;right:0;bottom:-.04em;width:100%;height:.2
 .handle:hover,.handle:focus-visible{border-color:var(--app);color:var(--app);outline:none}
 .handle svg{width:16px;height:16px}
 
-/* Filters */
+/* Filters (sticky only while scrolling the project cards) */
+.projects{display:flex;flex-direction:column;gap:22px}
 .filters{display:flex;flex-wrap:wrap;gap:8px;position:sticky;top:env(safe-area-inset-top,0px);z-index:2;padding-block:10px;
   background:linear-gradient(var(--bg) 70%, transparent)}
 .chip{font:600 14px/1 var(--body);padding:11px 16px;border-radius:999px;border:1.5px solid var(--line);background:var(--surface);color:var(--ink);cursor:pointer;display:inline-flex;align-items:center;gap:8px}
@@ -128,14 +129,69 @@ a.card:focus-visible{outline:3px solid var(--c);outline-offset:3px}
 a.card:hover .go{transform:translateX(3px)}
 .empty{grid-column:1/-1;padding:44px;text-align:center;color:var(--muted);border:2px dashed var(--line);border-radius:22px;background:var(--surface)}
 
+/* Sketchbook: a separate board of taped-up drawings under the projects */
+.sketchbook{display:flex;flex-direction:column;gap:24px;padding-top:40px;border-top:2px dashed var(--line)}
+.sketchbook[hidden],.sk-post[hidden],.sk-more[hidden]{display:none}
+.sk-head{display:flex;flex-wrap:wrap;align-items:flex-end;justify-content:space-between;gap:10px 20px}
+.sk-head h2{font-family:var(--display);font-weight:800;font-size:clamp(26px,4vw,38px);line-height:1.1;letter-spacing:-.02em;margin:0;display:flex;align-items:center;gap:12px}
+.sk-head h2::before{content:"";width:14px;height:14px;border-radius:50%;background:var(--art);flex:none}
+.sk-head p{margin:6px 0 0;color:var(--muted);max-width:52ch}
+.sk-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:34px 26px;align-items:start;padding-top:12px}
+.sk{--r:0deg;margin:0;position:relative;background:var(--surface);padding:10px 10px 12px;border-radius:4px;box-shadow:var(--shadow);
+  transform:rotate(var(--r));transition:transform .2s ease}
+.sk:nth-child(3n+1){--r:-1.6deg} .sk:nth-child(3n+2){--r:1.1deg} .sk:nth-child(5n){--r:-.6deg}
+.sk::before{content:"";position:absolute;top:-11px;left:50%;width:76px;height:22px;transform:translateX(-50%) rotate(calc(var(--r) * -2));
+  background:var(--art);opacity:.5;border-radius:2px;z-index:1}
+.sk:hover{transform:rotate(0) translateY(-3px)}
+.sk-open{display:block;width:100%;padding:0;border:0;background:var(--art-soft);border-radius:2px;cursor:zoom-in;overflow:hidden}
+.sk-open img{display:block;width:100%;height:auto;min-height:80px;object-fit:cover}
+.sk-open:focus-visible{outline:3px solid var(--art);outline-offset:3px}
+.sk figcaption{display:flex;justify-content:space-between;align-items:baseline;gap:10px;margin-top:9px;font-size:14px;line-height:1.35}
+.sk figcaption span{overflow-wrap:anywhere}
+.sk time{flex:none;font-size:12px;color:var(--muted)}
+.sk-del{position:absolute;top:4px;right:4px;z-index:2;width:32px;height:32px;border-radius:50%;border:2px solid var(--surface);
+  background:var(--book);color:#fff;font:700 18px/1 var(--body);cursor:pointer;display:grid;place-items:center}
+.sk-empty{grid-column:1/-1;padding:36px;text-align:center;color:var(--muted);border:2px dashed var(--line);border-radius:22px;background:var(--surface)}
+.sk-more{align-self:center;font:600 14px/1 var(--body);padding:12px 20px;border-radius:999px;border:1.5px solid var(--line);background:var(--surface);color:var(--ink);cursor:pointer}
+
+/* Posting panel: only shown at /#post */
+.sk-post{display:grid;grid-template-columns:120px 1fr;gap:14px;align-items:start;background:var(--surface);border:2px solid var(--art);border-radius:22px;padding:16px;box-shadow:var(--shadow)}
+.sk-pick{position:relative;width:120px;aspect-ratio:1;border-radius:14px;background:var(--art-soft);border:2px dashed var(--art);display:grid;place-items:center;
+  text-align:center;font-weight:600;font-size:13px;color:var(--ink);cursor:pointer;overflow:hidden;padding:8px}
+.sk-pick input{position:absolute;inset:0;opacity:0;cursor:pointer}
+.sk-pick img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
+.sk-fields{display:flex;flex-direction:column;gap:10px;min-width:0}
+.sk-fields input[type=text],.sk-fields input[type=password]{font:500 16px var(--body);color:var(--ink);background:var(--bg);border:1.5px solid var(--line);border-radius:12px;padding:11px 13px;width:100%}
+.sk-fields input:focus{outline:none;border-color:var(--art)}
+.sk-row{display:flex;flex-wrap:wrap;align-items:center;gap:10px}
+.sk-go{font:700 15px/1 var(--body);padding:12px 22px;border-radius:999px;border:0;background:var(--ink);color:var(--bg);cursor:pointer}
+.sk-go:disabled{opacity:.45;cursor:default}
+.sk-lock{font:600 13px var(--body);background:none;border:0;color:var(--muted);text-decoration:underline;cursor:pointer;padding:4px}
+.sk-msg{margin:0;font-size:14px;color:var(--muted);min-height:1.4em}
+.sk-msg.err{color:var(--book)}
+
+/* Lightbox */
+.sk-view{border:0;padding:0;background:transparent;max-width:min(94vw,1100px);max-height:94vh;color:var(--ink)}
+.sk-view::backdrop{background:rgba(19,17,42,.82)}
+.sk-view figure{margin:0;background:var(--surface);padding:12px 12px 14px;border-radius:8px;display:flex;flex-direction:column;gap:10px}
+.sk-view img{display:block;max-width:100%;max-height:calc(94vh - 90px);width:auto;height:auto;margin:0 auto;border-radius:3px}
+.sk-view figcaption{display:flex;justify-content:space-between;gap:12px;font-size:15px}
+.sk-view time{color:var(--muted);font-size:13px;flex:none}
+.sk-x{position:absolute;top:8px;right:8px;width:38px;height:38px;border-radius:50%;border:0;background:var(--ink);color:var(--bg);font:700 20px/1 var(--body);cursor:pointer}
+
 footer{display:flex;flex-wrap:wrap;justify-content:space-between;gap:8px;font-size:13px;color:var(--muted)}
 
 @media (max-width:520px){
   .wrap{padding-block:32px 56px;gap:30px}
   .avatar{width:104px;height:104px}
   .lede{font-size:16px}
+  .sk-grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:26px 16px}
+  .sk{padding:7px 7px 9px}
+  .sk figcaption{font-size:13px;flex-direction:column;gap:2px}
+  .sk-post{grid-template-columns:96px 1fr;padding:12px;gap:12px}
+  .sk-pick{width:96px}
 }
-@media (prefers-reduced-motion:reduce){ .card,.go{transition:none} }
+@media (prefers-reduced-motion:reduce){ .card,.go,.sk{transition:none} }
 </style>
 </head>
 <body>
@@ -160,9 +216,40 @@ footer{display:flex;flex-wrap:wrap;justify-content:space-between;gap:8px;font-si
     </nav>
   </header>
 
-  <div class="filters" id="filters" role="group" aria-label="Filter by type"></div>
+  <div class="projects">
+    <div class="filters" id="filters" role="group" aria-label="Filter by type"></div>
+    <main class="board" id="board" aria-live="polite"></main>
+  </div>
 
-  <main class="board" id="board" aria-live="polite"></main>
+  <section class="sketchbook" id="sketchbook" aria-labelledby="sk-title" hidden>
+    <div class="sk-head">
+      <div>
+        <h2 id="sk-title">Sketchbook</h2>
+        <p>Drawings made between shifts, taped up as they happen. Newest first.</p>
+      </div>
+    </div>
+
+    <form class="sk-post" id="sk-post" hidden>
+      <label class="sk-pick"><span id="sk-pick-label">그림 고르기</span><input type="file" id="sk-file" accept="image/*"></label>
+      <div class="sk-fields">
+        <input type="text" id="sk-cap" maxlength="80" placeholder="한 줄 설명 (선택, 80자)" autocomplete="off">
+        <input type="password" id="sk-pw" placeholder="비밀번호" autocomplete="current-password">
+        <div class="sk-row">
+          <button class="sk-go" id="sk-go" type="submit" disabled>올리기</button>
+          <button class="sk-lock" id="sk-lock" type="button" hidden>이 기기에서 비밀번호 지우기</button>
+        </div>
+        <p class="sk-msg" id="sk-msg" role="status"></p>
+      </div>
+    </form>
+
+    <div class="sk-grid" id="sk-grid"></div>
+    <button class="sk-more" id="sk-more" type="button" hidden>Show more</button>
+  </section>
+
+  <dialog class="sk-view" id="sk-view" aria-label="Drawing">
+    <figure><img id="sk-view-img" alt=""><figcaption><span id="sk-view-cap"></span><time id="sk-view-date"></time></figcaption></figure>
+    <button class="sk-x" id="sk-x" type="button" aria-label="Close">×</button>
+  </dialog>
 
   <footer>
     <span>Made in the Alberta foothills</span>
@@ -307,6 +394,170 @@ if (PROFILE_PHOTO) {
 
 renderFilters();
 render();
+
+/* =========================================================
+   스케치북 게시판 (Sketchbook)
+   - 방문자: 그림이 한 장이라도 있으면 프로젝트 카드 아래에 보여요.
+   - 그림 올리기: 주소 끝에 #post 를 붙여서 열기
+       https://between-shifts.vercel.app/#post
+     그림 고르기 → 설명(선택) → 비밀번호 → 올리기.
+     비밀번호는 이 기기에 기억돼서 다음부터는 안 물어봐요.
+   - 지우기: #post 화면에서 그림 오른쪽 위 × 버튼
+   ========================================================= */
+const SK_PAGE = 24;
+const skSection = document.getElementById('sketchbook');
+const skGrid = document.getElementById('sk-grid');
+const skMore = document.getElementById('sk-more');
+const skForm = document.getElementById('sk-post');
+const skFile = document.getElementById('sk-file');
+const skCap = document.getElementById('sk-cap');
+const skPw = document.getElementById('sk-pw');
+const skGo = document.getElementById('sk-go');
+const skLock = document.getElementById('sk-lock');
+const skMsg = document.getElementById('sk-msg');
+const skPickLabel = document.getElementById('sk-pick-label');
+const skView = document.getElementById('sk-view');
+let sketches = [], skReady = false, skShown = SK_PAGE, skAdmin = location.hash === '#post';
+
+const pwGet = () => { try { return localStorage.getItem('bs-sk-pw') || ''; } catch(e) { return ''; } };
+const pwSet = v => { try { v ? localStorage.setItem('bs-sk-pw', v) : localStorage.removeItem('bs-sk-pw'); } catch(e) {} };
+const skDate = d => new Date(d).toLocaleDateString('en-US', { month:'short', day:'numeric', year:'numeric' });
+const say = (t, err) => { skMsg.textContent = t || ''; skMsg.classList.toggle('err', !!err); };
+
+async function loadSketches(fresh){
+  try {
+    const r = await fetch('/api/sketches' + (fresh ? `?fresh=${Date.now()}` : ''), { cache: fresh ? 'no-store' : 'default' });
+    const d = await r.json();
+    sketches = Array.isArray(d.sketches) ? d.sketches : [];
+    skReady = !!d.ready;
+  } catch(e) { sketches = []; skReady = false; }
+  renderSketches();
+}
+
+function renderSketches(){
+  skSection.hidden = !(skAdmin || sketches.length);
+  skForm.hidden = !skAdmin;
+  if (skAdmin) {
+    const saved = !!pwGet();
+    skPw.hidden = saved; skLock.hidden = !saved;
+    if (!skReady && !skMsg.textContent) say('저장소가 아직 연결되지 않았어요. Vercel에서 Blob 저장소와 SKETCH_PASSWORD를 설정해 주세요.', true);
+  }
+  const list = sketches.slice(0, skShown);
+  skGrid.innerHTML = list.length ? list.map((s, i) => `
+    <figure class="sk" data-id="${esc(s.id)}">
+      <button class="sk-open" type="button" data-i="${i}" aria-label="Open ${esc(s.caption || 'drawing')}">
+        <img src="${esc(s.thumb || s.url)}" alt="${esc(s.caption || 'Drawing')}" loading="lazy" decoding="async">
+      </button>
+      <figcaption><span>${esc(s.caption)}</span><time datetime="${esc(s.date)}">${esc(skDate(s.date))}</time></figcaption>
+      ${skAdmin ? `<button class="sk-del" type="button" data-id="${esc(s.id)}" aria-label="Delete">×</button>` : ''}
+    </figure>`).join('')
+    : '<div class="sk-empty">아직 그림이 없어요. 위에서 첫 그림을 올려 보세요.</div>';
+  skMore.hidden = sketches.length <= skShown;
+}
+
+skMore.addEventListener('click', () => { skShown += SK_PAGE; renderSketches(); });
+
+/* 크게 보기 */
+skGrid.addEventListener('click', async e => {
+  const del = e.target.closest('.sk-del');
+  if (del) {
+    if (!confirm('이 그림을 지울까요? 되돌릴 수 없어요.')) return;
+    const pw = pwGet() || skPw.value;
+    const r = await fetch(`/api/sketches?id=${encodeURIComponent(del.dataset.id)}`, { method:'DELETE', headers:{ 'x-sketch-password': pw } });
+    const d = await r.json().catch(() => ({}));
+    if (!r.ok) { if (r.status === 401) { pwSet(''); renderSketches(); } say(d.error || `지우지 못했어요 (${r.status})`, true); return; }
+    sketches = sketches.filter(s => s.id !== del.dataset.id);
+    say('지웠어요.'); renderSketches();
+    return;
+  }
+  const open = e.target.closest('.sk-open'); if (!open) return;
+  const s = sketches[Number(open.dataset.i)]; if (!s) return;
+  if (typeof skView.showModal !== 'function') { window.open(s.url, '_blank', 'noopener'); return; }
+  document.getElementById('sk-view-img').src = s.url;
+  document.getElementById('sk-view-img').alt = s.caption || 'Drawing';
+  document.getElementById('sk-view-cap').textContent = s.caption || '';
+  const t = document.getElementById('sk-view-date'); t.textContent = skDate(s.date); t.dateTime = s.date;
+  skView.showModal();
+});
+document.getElementById('sk-x').addEventListener('click', () => skView.close());
+skView.addEventListener('click', e => { if (e.target === skView) skView.close(); });
+skView.addEventListener('close', () => { document.getElementById('sk-view-img').removeAttribute('src'); });
+
+/* 그림 올리기: 폰 사진도 올리기 전에 알맞은 크기로 줄여요 (원본 긴 변 2000px, 썸네일 720px) */
+async function loadBitmap(file){
+  if ('createImageBitmap' in window) {
+    try { return await createImageBitmap(file, { imageOrientation:'from-image' }); } catch(e) {}
+  }
+  return new Promise((res, rej) => {
+    const img = new Image();
+    img.onload = () => res(img);
+    img.onerror = () => rej(new Error('이 그림 파일을 열지 못했어요. JPG나 PNG로 다시 해 주세요.'));
+    img.src = URL.createObjectURL(file);
+  });
+}
+function toJpeg(src, maxSide, quality){
+  const s = Math.min(1, maxSide / Math.max(src.width, src.height));
+  const c = document.createElement('canvas');
+  c.width = Math.max(1, Math.round(src.width * s)); c.height = Math.max(1, Math.round(src.height * s));
+  const g = c.getContext('2d');
+  g.fillStyle = '#fff'; g.fillRect(0, 0, c.width, c.height);   // 투명 배경은 흰 종이로
+  g.imageSmoothingQuality = 'high';
+  g.drawImage(src, 0, 0, c.width, c.height);
+  return new Promise((res, rej) => c.toBlob(b => b ? res(b) : rej(new Error('그림을 변환하지 못했어요.')), 'image/jpeg', quality));
+}
+
+skFile.addEventListener('change', () => {
+  const f = skFile.files[0];
+  const label = skFile.closest('.sk-pick');
+  label.querySelector('img')?.remove();
+  if (f) {
+    const img = document.createElement('img'); img.alt = ''; img.src = URL.createObjectURL(f);
+    label.prepend(img); skPickLabel.textContent = '';
+  } else { skPickLabel.textContent = '그림 고르기'; }
+  skGo.disabled = !f; say('');
+});
+
+skLock.addEventListener('click', () => { pwSet(''); say('이 기기에서 비밀번호를 지웠어요.'); renderSketches(); });
+
+skForm.addEventListener('submit', async e => {
+  e.preventDefault();
+  const file = skFile.files[0]; if (!file) return;
+  const pw = pwGet() || skPw.value.trim();
+  if (!pw) { say('비밀번호를 넣어 주세요.', true); skPw.focus(); return; }
+  skGo.disabled = true; say('그림 준비 중…');
+  try {
+    const bmp = await loadBitmap(file);
+    let full = await toJpeg(bmp, 2000, .88);
+    if (full.size > 3.3e6) full = await toJpeg(bmp, 1600, .78);
+    const thumb = await toJpeg(bmp, 720, .8);
+    if (bmp.close) bmp.close();
+    const fd = new FormData();
+    fd.append('full', full, 'full.jpg');
+    fd.append('thumb', thumb, 'thumb.jpg');
+    fd.append('caption', skCap.value);
+    say('올리는 중…');
+    const r = await fetch('/api/sketches', { method:'POST', headers:{ 'x-sketch-password': pw }, body: fd });
+    const d = await r.json().catch(() => ({}));
+    if (!r.ok) { if (r.status === 401) pwSet(''); throw new Error(d.error || `올리지 못했어요 (${r.status})`); }
+    pwSet(pw); skPw.value = '';
+    sketches.unshift(d.sketch);
+    skForm.reset(); skFile.dispatchEvent(new Event('change'));
+    renderSketches();
+    say('올렸어요. 방문자 화면에는 1분 안에 보여요.');
+  } catch(err) {
+    say(err.message || '올리지 못했어요.', true);
+    renderSketches();
+  } finally {
+    skGo.disabled = !skFile.files.length;
+  }
+});
+
+window.addEventListener('hashchange', () => {
+  const a = location.hash === '#post';
+  if (a !== skAdmin) { skAdmin = a; say(''); renderSketches(); }
+});
+
+loadSketches(skAdmin);
 </script>
 </body>
 </html>
