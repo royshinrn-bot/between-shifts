@@ -20,4 +20,4 @@ Roy's hub page: apps, KDP books, illustration and design made between shifts.
 2. Settings → Environment Variables → `SKETCH_PASSWORD` 추가 (8자 이상, 다른 곳에 안 쓰는 비밀번호)
 3. Deployments → 최신 배포 → Redeploy (환경 변수는 다시 배포해야 적용됨)
 
-서버 코드는 `api/sketches.js`. 올릴 때 브라우저에서 원본(긴 변 2000px)과 썸네일(720px) JPG로 줄여서 보낸다.
+서버 코드는 `api/sketches.js`. 방문자에게는 목록을 1시간 캐시해서 보여 준다 (Blob 무료 한도: 목록 조회 월 2,000번). 올릴 때 브라우저에서 원본(긴 변 2000px)과 썸네일(720px) JPG로 줄여서 보낸다.

@@ -94,8 +94,9 @@ export async function GET() {
   if (!process.env.BLOB_READ_WRITE_TOKEN) return json({ ready: false, sketches: [] });
   try {
     const sketches = toSketches(await listAll());
-    // 1분 동안은 Vercel이 캐시한 목록을 보여 줌 (목록 조회 횟수 아끼기). 올린 직후에는 페이지가 ?fresh=로 새로 받음.
-    return json({ ready: true, sketches }, 200, { 'cache-control': 'public, s-maxage=60, stale-while-revalidate=600' });
+    // 목록 조회(list)는 무료 한도가 월 2,000번이라, 방문자에게는 1시간 동안 캐시한 목록을 보여 줌.
+    // 올린 사람(#post 화면)은 ?fresh=로 항상 새 목록을 받음.
+    return json({ ready: true, sketches }, 200, { 'cache-control': 'public, s-maxage=3600, stale-while-revalidate=86400' });
   } catch (e) {
     return json({ ready: false, sketches: [], error: '목록을 불러오지 못했어요.' }, 500);
   }

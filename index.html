@@ -543,7 +543,7 @@ skForm.addEventListener('submit', async e => {
     sketches.unshift(d.sketch);
     skForm.reset(); skFile.dispatchEvent(new Event('change'));
     renderSketches();
-    say('올렸어요. 방문자 화면에는 1분 안에 보여요.');
+    say('올렸어요. 방문자 화면에는 1시간 안에 보여요.');
   } catch(err) {
     say(err.message || '올리지 못했어요.', true);
     renderSketches();
